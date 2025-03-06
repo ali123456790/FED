@@ -1,0 +1,4 @@
+"""
+Client module for FIDS.
+"""
+

@@ -1,0 +1,4 @@
+"""
+Edge module for FIDS.
+"""
+
