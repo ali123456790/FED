@@ -1,0 +1,90 @@
+{
+  "client_id": "client2",
+  "device_info": {
+    "system": "Darwin",
+    "release": "24.3.0",
+    "version": "Darwin Kernel Version 24.3.0: Thu Jan  2 20:23:36 PST 2025; root:xnu-11215.81.4~3/RELEASE_ARM64_T8112",
+    "machine": "arm64",
+    "processor": "arm",
+    "cpu_count": 8,
+    "cpu_physical_count": 8,
+    "memory_total": 8589934592,
+    "platform": "macOS-15.3.2-arm64-arm-64bit",
+    "python_version": "3.12.9",
+    "cpu_freq_max": 3504,
+    "cpu_freq_min": 600,
+    "cpu_freq_current": 3504,
+    "gpu_available": false,
+    "gpu_info": [],
+    "tensorflow_gpu": false,
+    "tensorflow_gpu_count": 0,
+    "pytorch_gpu": false,
+    "pytorch_gpu_count": 0,
+    "net_bytes_sent": 2911086592,
+    "net_bytes_recv": 330841088,
+    "disk_total": 245107195904,
+    "disk_free": 107147030528,
+    "disk_percent": 9.4
+  },
+  "device_category": "mid_range_cpu",
+  "created_at": 1742622053.40005,
+  "last_seen": 1742625738.052901,
+  "training_count": 0,
+  "average_training_time": 0,
+  "max_batch_size": 64,
+  "performance_benchmark": {
+    "matrix_mul_1000x1000": 0.02624225616455078,
+    "memory_copy_1M": 0.004041194915771484,
+    "gpu_tf_matmul_1000x1000": 0.09046006202697754
+  },
+  "resource_history": [
+    {
+      "timestamp": 1742625738.561707,
+      "cpu_percent": 59.5,
+      "memory_available": 1296105472,
+      "memory_percent": 84.9,
+      "disk_free": 107145719808,
+      "disk_percent": 9.4,
+      "battery_percent": 40,
+      "battery_power_plugged": false,
+      "net_sent": 2913488896,
+      "net_recv": 333251584
+    },
+    {
+      "timestamp": 1742625738.722705,
+      "cpu_percent": 55.8,
+      "memory_available": 1296924672,
+      "memory_percent": 84.9,
+      "disk_free": 107145728000,
+      "disk_percent": 9.4,
+      "battery_percent": 40,
+      "battery_power_plugged": false,
+      "net_sent": 2913489920,
+      "net_recv": 333252608
+    },
+    {
+      "timestamp": 1742625739.22694,
+      "cpu_percent": 68.7,
+      "memory_available": 1249116160,
+      "memory_percent": 85.5,
+      "disk_free": 106071773184,
+      "disk_percent": 9.5,
+      "battery_percent": 40,
+      "battery_power_plugged": false,
+      "net_sent": 2913489920,
+      "net_recv": 333254656
+    }
+  ],
+  "last_resource_check": {
+    "timestamp": 1742625739.22694,
+    "cpu_percent": 68.7,
+    "memory_available": 1249116160,
+    "memory_percent": 85.5,
+    "disk_free": 106071773184,
+    "disk_percent": 9.5,
+    "battery_percent": 40,
+    "battery_power_plugged": false,
+    "net_sent": 2913489920,
+    "net_recv": 333254656
+  }
+}

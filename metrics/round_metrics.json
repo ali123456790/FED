@@ -1,0 +1,24 @@
+[
+  {
+    "round": 1,
+    "phase": "fit",
+    "timestamp": 1742625742.8851352,
+    "metrics": {
+      "round_duration": 5.0067901611328125e-06,
+      "timestamp": 1742625742.378583,
+      "num_clients": 0,
+      "num_failures": 2,
+      "failure_rate": 1.0,
+      "server_cpu_percent": 69.2,
+      "server_memory_percent": 83.9,
+      "server_memory_available_mb": 1321.0625,
+      "server_memory_used_mb": 2925.6875,
+      "server_disk_percent": 9.5,
+      "server_disk_free_gb": 98.78680801391602,
+      "server_net_sent_mb": 2778.548828125,
+      "server_net_recv_mb": 317.8603515625
+    },
+    "clients": [],
+    "failed_clients": []
+  }
+]
