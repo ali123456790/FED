@@ -390,13 +390,34 @@ class FlowerServer:
             failures: List of client failures
         """
         # Create metrics entry
+        failed_clients = []
+        
+        # Process failures properly, handling both tuple failures and exception failures
+        for failure in failures:
+            if isinstance(failure, tuple) and len(failure) >= 1:
+                # Handle tuple failures (client, _)
+                failed_clients.append(failure[0].cid)
+            elif hasattr(failure, '__str__'):
+                # Handle exceptions and other non-tuple failures
+                logger.warning(f"Non-tuple failure in round {server_round}: {str(failure)}")
+        
+        clients_list = []
+        for res in results:
+            if isinstance(res, tuple) and len(res) >= 1:
+                try:
+                    clients_list.append(res[0].cid)
+                except Exception as e:
+                    logger.warning(f"Error extracting client cid: {e} from result: {res}")
+            else:
+                logger.warning(f"Ignoring invalid result entry (not a tuple): {res}")
+        
         metrics_entry = {
             "round": server_round,
             "phase": phase,
             "timestamp": time.time(),
             "metrics": metrics,
-            "clients": [client.cid for client, _ in results],
-            "failed_clients": [client.cid for client, _ in failures if isinstance(failures[0], tuple)]
+            "clients": clients_list,
+            "failed_clients": failed_clients
         }
         
         # Add to metrics list

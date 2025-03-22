@@ -9,6 +9,8 @@ import numpy as np
 import tensorflow as tf
 from typing import Dict, List, Tuple, Optional, Union, Any
 from pathlib import Path
+import re
+from flwr.client import NumPyClient, start_client
 
 from .device_manager import DeviceManager
 from .utils import load_data, preprocess_data, save_local_model
@@ -36,7 +38,11 @@ class FlowerClient(fl.client.NumPyClient):
         self.security_config = config["security"]
         
         # Set device-specific random seed for reproducibility
-        seed = int(client_id.split('_')[-1]) + 42
+        match = re.search(r'\d+$', client_id)
+        if match:
+            seed = int(match.group()) + 42
+        else:
+            raise ValueError(f"Invalid client_id format: '{client_id}'. Must end with a numeric value.")
         np.random.seed(seed)
         tf.random.set_seed(seed)
         
@@ -74,7 +80,8 @@ class FlowerClient(fl.client.NumPyClient):
     def _load_and_preprocess_data(self) -> None:
         """Load and preprocess data for this client."""
         # Ensure the data directory exists
-        data_path = Path(self.data_config["path"])
+        # Use the processed directory for cached preprocessed data
+        data_path = Path("data/processed")
         data_path.mkdir(parents=True, exist_ok=True)
         
         # Check if we have cached preprocessed data for this client
@@ -160,6 +167,27 @@ class FlowerClient(fl.client.NumPyClient):
         Returns:
             List of model parameters as numpy arrays
         """
+        # If the model instance itself is not created, create it using the model factory
+        if self.model is None:
+            from models.model_factory import create_model
+            self.model = create_model(self.model_config)
+
+        # If the underlying Keras model is not built yet, build it using training data
+        if self.model.model is None:
+            if self.x_train is None or self.y_train is None:
+                raise RuntimeError("Training data not loaded; cannot build model")
+
+            # Infer input shape from training data
+            input_shape = self.x_train.shape[1:]
+
+            # Infer number of classes from training labels
+            unique_labels = np.unique(self.y_train)
+            num_classes = len(unique_labels)
+
+            # Build and compile the model using the configuration
+            self.model.build_model(input_shape, num_classes)
+            self.model.compile_model(learning_rate=self.model.config.get('learning_rate', 0.001))
+
         return self.model.get_weights()
     
     def fit(self, parameters: List[np.ndarray], config: Dict) -> Tuple[List[np.ndarray], int, Dict]:
@@ -173,8 +201,24 @@ class FlowerClient(fl.client.NumPyClient):
         Returns:
             Tuple of (updated_parameters, num_samples, metrics)
         """
+        # Debug logging for parameters
+        logger.debug(f"Received parameters: {len(parameters)} weight arrays")
+        for i, param in enumerate(parameters):
+            logger.debug(f"Parameter {i} shape: {param.shape}")
+        
         # Update local model with global parameters
-        self.model.set_weights(parameters)
+        try:
+            self.model.set_weights(parameters)
+        except Exception as e:
+            logger.error(f"Error setting weights: {e}")
+            # If setting weights fails, log more details
+            if self.model is None:
+                logger.error("Model is None before setting weights")
+            else:
+                logger.error(f"Model summary: {self.model.summary()}")
+                logger.error(f"Model input shape: {self.model.input_shape}")
+                logger.error(f"Model output shape: {self.model.output_shape}")
+            raise
         
         # Check device resources
         resources = self.device_manager.check_resources()
@@ -343,13 +387,16 @@ class FlowerClient(fl.client.NumPyClient):
             logger.info("TLS encryption enabled for client-server communication")
         
         # Start client
-        server_address = f"{self.config['server']['address']}:{self.config['server']['port']}"
+        server_ip = self.config['server']['address']
+        if server_ip == "0.0.0.0":
+            server_ip = "127.0.0.1"
+        server_address = f"{server_ip}:{self.config['server']['port']}"
         logger.info(f"Connecting to server at {server_address}")
         
         try:
-            fl.client.start_numpy_client(
+            start_client(
                 server_address=server_address,
-                client=self,
+                client=FlowerClientWrapper(client=self).to_client(),
                 root_certificates=None if not secure_grpc else self._get_root_certificates()
             )
             logger.info(f"Client {self.client_id} successfully completed federated learning")
@@ -373,3 +420,22 @@ class FlowerClient(fl.client.NumPyClient):
             return None
 
 import time  # Added for timing measurements
+
+class FlowerClientWrapper(NumPyClient):
+    def __init__(self, client):
+        self.client = client
+
+    def get_parameters(self, config):
+        return self.client.get_parameters(config)
+
+    def fit(self, parameters, config):
+        return self.client.fit(parameters, config)
+
+    def evaluate(self, parameters, config):
+        return self.client.evaluate(parameters, config)
+
+    def to_client(self):
+        # The correct way to convert a NumPyClient to Client
+        # Since fl.client.NumPyClientWrapper doesn't exist, use the to_client method
+        # which is part of the NumPyClient class API
+        return super().to_client()

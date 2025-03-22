@@ -28,7 +28,7 @@ class SecureAggregation:
         """
         self.config = config
         self.secure_agg_config = config.get("secure_aggregation", {})
-        self.enabled = self.secure_agg_config.get("enabled", False)
+        self.enabled = False  # Force disable secure aggregation
         self.secure_agg_type = self.secure_agg_config.get("type", "secure_sum")
         
         # Parameters for robust aggregation

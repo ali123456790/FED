@@ -92,6 +92,7 @@ class BaseDeepLearningModel:
             optimizer = Adam(learning_rate=learning_rate)
         
         # Compile the model
+        num_classes = self.config.get("default_num_classes", 2)
         self.model.compile(
             optimizer=optimizer,
             loss='binary_crossentropy' if num_classes == 2 else 'categorical_crossentropy',
@@ -351,9 +352,20 @@ class BaseDeepLearningModel:
         Returns:
             List of model weights as numpy arrays
         """
-        if not self.is_fitted or self.model is None:
-            raise RuntimeError("Model must be fitted before getting weights")
-        
+        if self.model is None:
+            logger.warning("Underlying Keras model is not built; attempting to build with default settings.")
+
+            # Retrieve default input shape and number of classes from config
+            input_shape = self.config.get("default_input_shape")
+            if input_shape is None:
+                raise RuntimeError("Model is not initialized and no default_input_shape provided in config.")
+
+            num_classes = self.config.get("default_num_classes", 2)
+
+            # Build and compile the model
+            self.build_model(input_shape, num_classes)
+            self.compile_model(learning_rate=self.config.get("learning_rate", 0.001))
+
         return self.model.get_weights()
     
     def set_weights(self, weights: List[np.ndarray]) -> None:
@@ -364,7 +376,29 @@ class BaseDeepLearningModel:
             weights: List of model weights
         """
         if self.model is None:
-            raise RuntimeError("Model must be initialized before setting weights")
+            # Infer input shape and number of classes from weights
+            # Typically, the first layer's weights give us input shape information
+            # and the last layer's weights give us the number of classes
+            
+            # Infer input shape (assuming first layer is Dense or Conv/LSTM)
+            first_layer_weights = weights[0]
+            
+            # For Dense/Conv layers
+            if first_layer_weights.ndim == 2:
+                input_shape = (first_layer_weights.shape[0],)
+            # For LSTM/CNN layers
+            elif first_layer_weights.ndim == 3:
+                input_shape = (first_layer_weights.shape[1], first_layer_weights.shape[2])
+            else:
+                raise ValueError("Cannot infer input shape from weights")
+            
+            # Infer number of classes from last layer
+            last_layer_weights = weights[-2]  # Weights, not biases
+            num_classes = last_layer_weights.shape[1]
+            
+            # Build the model with inferred parameters
+            self.build_model(input_shape, num_classes)
+            self.compile_model()
         
         self.model.set_weights(weights)
         self.is_fitted = True

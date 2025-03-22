@@ -125,3 +125,43 @@ def load_local_model(client_id: str, path: str = "./models/local") -> Any:
     logger.info(f"Local model loaded from {model_path}")
     return model
 
+def load_n_baiot_data(client_id: str, cache: bool = True):
+    """
+    Load N-BaIoT dataset for a specific client.
+    
+    Args:
+        client_id: Client identifier
+        cache: Whether to use cached preprocessed data
+        
+    Returns:
+        Training and test data (X_train, y_train, X_test, y_test)
+    """
+    # Try to load preprocessed data from cache
+    cache_file = os.path.join("data", "processed", f"preprocessed_{client_id}.npz")
+    
+    if cache and os.path.exists(cache_file):
+        logger.info(f"Loading preprocessed data from {cache_file}")
+        data = np.load(cache_file)
+        return data['X_train'], data['y_train'], data['X_test'], data['y_test']
+    
+    # Simulate loading data
+    num_samples = 1000
+    num_features = 115  # N-BaIoT has 115 features
+    
+    # Generate random data for demonstration
+    X = np.random.rand(num_samples, num_features)
+    y = np.random.randint(0, 2, num_samples)  # Binary classification
+    
+    # Split data into train and test sets
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+    
+    # Save preprocessed data to cache
+    if cache:
+        os.makedirs(os.path.dirname(os.path.join("data", "processed")), exist_ok=True)
+        np.savez_compressed(os.path.join("data", "processed", f"preprocessed_{client_id}.npz"),
+                          X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test)
+        
+    return X_train, y_train, X_test, y_test
+

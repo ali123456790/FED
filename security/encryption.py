@@ -13,6 +13,7 @@ import base64
 from pathlib import Path
 from typing import Dict, Any, Tuple, Optional, Union, List
 from datetime import datetime, timedelta
+import numpy as np
 
 # Cryptographic libraries
 from cryptography.hazmat.primitives.asymmetric import rsa, padding, ec
