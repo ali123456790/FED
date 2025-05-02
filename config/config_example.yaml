@@ -1,0 +1,109 @@
+# Configuration example for FIDS (Federated Intelligent Distributed System)
+
+# Basic system configuration
+system:
+  name: "FIDS"
+  version: "1.0.0"
+  log_level: "INFO"
+  data_dir: "./data"
+  output_dir: "./output"
+  temp_dir: "./temp"
+
+# Security configuration
+security:
+  # Differential privacy configuration
+  differential_privacy:
+    enabled: true
+    mechanism: "gaussian"  # "gaussian" or "laplace"
+    noise_multiplier: 1.0
+    l2_norm_clip: 1.0
+    target_epsilon: 10.0
+    target_delta: 1e-5
+  
+  # Secure aggregation configuration
+  secure_aggregation:
+    enabled: true
+    # Available types: "trimmed_mean", "median", "robust_aggregation", "secure_sum"
+    type: "trimmed_mean"
+    outlier_threshold: 1.5
+    min_clients: 3
+    trimming_percentage: 0.2  # Percentage to trim from each end for trimmed mean (0.2 = 20%)
+  
+  # Encryption configuration
+  encryption:
+    enabled: true
+    type: "paillier"  # Changed from "custom" to "paillier"
+    cert_path: "./certificates"
+    paillier:
+      key_size: 2048
+      encoding_precision_bits: 64
+  
+  # Authentication
+  authentication:
+    enabled: true
+    type: "hmac"  # Options: hmac, signature
+    key_rotation: false  # Whether to rotate HMAC keys periodically 
+    key_rotation_interval: 3600  # seconds
+    hmac_keys:
+      # Keys can be derived from a master secret, distributed via config, or generated dynamically
+      key_management: "config"  # Options: config, derive, dynamic
+      client_edge_key: ""  # K_CE - Client-Edge communication key (empty to generate random key)
+      edge_server_key: ""  # K_ES - Edge-Server communication key (empty to generate random key)
+      key_paths:
+        # Paths to key files (more secure than embedding in config)
+        client_edge_key_path: "./keys/k_ce.key"  # Path to K_CE key file
+        edge_server_key_path: "./keys/k_es.key"  # Path to K_ES key file
+  
+  # Threat detection
+  threat_model:
+    enabled: true
+    poisoning_detection: true
+    freerider_detection: true
+    adversarial_detection: true
+    anomaly_threshold: 3.0
+
+# Federation configuration
+federation:
+  rounds: 100
+  min_clients: 5
+  sample_clients: 10
+  aggregation_strategy: "fedavg"
+  client_wait_timeout: 60  # seconds
+  round_timeout: 300  # seconds
+
+# Model configuration
+model:
+  type: "cnn"
+  input_shape: [28, 28, 1]
+  optimizer: "adam"
+  learning_rate: 0.001
+  batch_size: 32
+  local_epochs: 5
+
+# Client configuration
+client:
+  training:
+    batch_size: 32
+    local_epochs: 5
+    learning_rate: 0.001
+    optimizer: "adam"
+  
+  device:
+    heterogeneity_enabled: true
+    resource_monitoring: true
+    monitor_interval: 60  # seconds
+
+# Edge configuration
+edge:
+  enabled: true
+  aggregation_batch: 5
+  aggregation_timeout: 120  # seconds
+  client_selection_strategy: "random"
+
+# Server configuration
+server:
+  host: "localhost"
+  port: 8080
+  api_enabled: true
+  dashboard_enabled: true
+  dashboard_port: 8081 

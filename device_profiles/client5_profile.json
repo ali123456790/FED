@@ -1,0 +1,66 @@
+{
+  "client_id": "client5",
+  "device_info": {
+    "system": "Darwin",
+    "release": "24.3.0",
+    "version": "Darwin Kernel Version 24.3.0: Thu Jan  2 20:23:36 PST 2025; root:xnu-11215.81.4~3/RELEASE_ARM64_T8112",
+    "machine": "arm64",
+    "processor": "arm",
+    "cpu_count": 8,
+    "cpu_physical_count": 8,
+    "memory_total": 8589934592,
+    "platform": "macOS-15.3.2-arm64-arm-64bit",
+    "python_version": "3.8.19",
+    "cpu_freq_max": 3504,
+    "cpu_freq_min": 600,
+    "cpu_freq_current": 3504,
+    "gpu_available": true,
+    "gpu_info": [],
+    "tensorflow_gpu": true,
+    "tensorflow_gpu_count": 1,
+    "pytorch_gpu": false,
+    "pytorch_gpu_count": 0,
+    "net_bytes_sent": 2883638272,
+    "net_bytes_recv": 49583104,
+    "disk_total": 245107195904,
+    "disk_free": 107369697280,
+    "disk_percent": 9.4
+  },
+  "device_category": "high_end_gpu",
+  "created_at": 1742623833.407815,
+  "last_seen": 1742623833.407815,
+  "training_count": 0,
+  "average_training_time": 0,
+  "max_batch_size": 64,
+  "performance_benchmark": {
+    "matrix_mul_1000x1000": 0.02764415740966797,
+    "memory_copy_1M": 0.004642963409423828,
+    "gpu_tf_matmul_1000x1000": 0.4654808044433594
+  },
+  "resource_history": [
+    {
+      "timestamp": 1742623834.42817,
+      "cpu_percent": 18.8,
+      "memory_available": 1280966656,
+      "memory_percent": 85.1,
+      "disk_free": 107368521728,
+      "disk_percent": 9.4,
+      "battery_percent": 54,
+      "battery_power_plugged": false,
+      "net_sent": 2883643392,
+      "net_recv": 49591296
+    }
+  ],
+  "last_resource_check": {
+    "timestamp": 1742623834.42817,
+    "cpu_percent": 18.8,
+    "memory_available": 1280966656,
+    "memory_percent": 85.1,
+    "disk_free": 107368521728,
+    "disk_percent": 9.4,
+    "battery_percent": 54,
+    "battery_power_plugged": false,
+    "net_sent": 2883643392,
+    "net_recv": 49591296
+  }
+}

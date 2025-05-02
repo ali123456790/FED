@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Certificates and Keys
+certificates/
+*.pem
+*.key
+*.crt
+*.csr
+*.cer
+
+# Logs and Databases
+*.log
+*.sqlite
+*.db
+
+# Model files and metrics
+metrics/*.bin.npz
+metrics/training_history.json
+metrics/resource_metrics.json
+metrics/round_metrics.json
+
+# OS specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Data
+data/raw/
+*.csv
+*.dat
+
+# Environment variables
+.env
+.env.*
+
+# Compiled Protocol Buffers
+*_pb2.py

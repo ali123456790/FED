@@ -1,0 +1,111 @@
+# Server configuration
+server:
+  address: "127.0.0.1"
+  port: 8080
+  rounds: 10
+  min_clients: 2
+  min_available_clients: 2
+  timeout: 60
+  aggregation_strategy: "fedavg"  # Options: fedavg, fedprox, fedopt
+
+# Client configuration
+client:
+  local_epochs: 5
+  batch_size: 32
+  learning_rate: 0.001
+  optimizer: "adam"
+  device_heterogeneity: true
+  resource_monitoring: true
+
+# Edge configuration
+edge:
+  enabled: false  # Disable edge aggregation for this test
+  nodes: 2
+  aggregation_strategy: "weighted_average"
+  client_assignment: "proximity"  # Options: proximity, resource, random
+
+# Model configuration
+model:
+  type: "deep_learning"  # Options: traditional, deep_learning
+  name: "lstm"  # Options: random_forest, naive_bayes, lstm, bilstm
+  hyperparameters:
+    random_forest:
+      n_estimators: 100
+      max_depth: 10
+    naive_bayes:
+      var_smoothing: 1e-9
+    lstm:
+      hidden_size: 128
+      num_layers: 2
+      dropout: 0.2
+    bilstm:
+      hidden_size: 128
+      num_layers: 2
+      dropout: 0.2
+
+# Data configuration
+data:
+  dataset: "n_baiot"
+  path: "./data/raw"
+  test_size: 0.2
+  validation_size: 0.1
+  iid: false
+  feature_selection: true
+  num_features: 10
+
+# Security configuration
+security:
+  differential_privacy:
+    enabled: false  # Disable DP for this comprehensive test to focus on performance
+    noise_multiplier: 1.0
+    l2_norm_clip: 1.0
+  encryption:
+    enabled: true  # Enable encryption for Paillier PHE
+    type: "paillier"  # Changed from "tls" to "paillier"
+    paillier:
+      key_size: 2048 # Key size for Paillier
+      encoding_precision_bits: 64 # Precision for float-to-int encoding
+  secure_aggregation:
+    enabled: false  # Disable secure aggregation for this test
+    type: "secure_sum"  # Options: secure_sum, robust_aggregation
+  threat_model:
+    poisoning_defense: true
+    adversarial_defense: true
+  # New masking configuration
+  masking:
+    enabled: true  # Enable masking as primary privacy preservation mechanism
+    type: "additive"  # Options: additive, multiplicative
+    mask_scale: 0.1  # Scale of the random mask
+  # HMAC authentication configuration
+  authentication:
+    enabled: true
+    type: "hmac"  # Options: hmac, signature
+    key_rotation: false  # Whether to rotate HMAC keys periodically
+    key_rotation_interval: 3600  # Rotate keys every hour (in seconds)
+    hmac_keys:
+      # Keys can be derived from a master secret, distributed via config, or generated dynamically
+      key_management: "config"  # Options: config, derive, dynamic
+      client_edge_key: ""  # K_CE - Client-Edge communication key (empty to generate random key)
+      edge_server_key: ""  # K_ES - Edge-Server communication key (empty to generate random key)
+      key_paths:
+        # Alternative: paths to key files (more secure than embedding in config)
+        client_edge_key_path: "./keys/k_ce.key"  # Path to K_CE key file
+        edge_server_key_path: "./keys/k_es.key"  # Path to K_ES key file
+  # Serialization configuration
+  serialization:
+    use_protobuf: true
+    fallback_to_pickle: true  # Fallback to pickle serialization if protobuf fails
+
+# Evaluation configuration
+evaluation:
+  metrics: ["accuracy", "precision", "recall", "f1", "auc"]
+  privacy_analysis: false  # Disable privacy analysis since DP is disabled
+  comparison_with_centralized: true
+  visualization: true
+
+# Logging configuration
+logging:
+  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  file: "./logs/fids.log"
+  console: true
+

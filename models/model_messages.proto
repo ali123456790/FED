@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package fids;
+
+// Model update message containing client identity and model parameters
+message ModelUpdate {
+  // Client identification
+  string client_id = 1;
+  int32 round_id = 2;
+  string device_type = 3;
+  
+  // Metadata
+  int64 timestamp = 4;
+  float training_time = 5;
+  int32 training_samples = 6;
+  
+  // Authentication
+  bytes hmac_digest = 7;
+  
+  // Encryption information (new fields)
+  bool is_encrypted = 10;
+  bytes encrypted_aes_key = 11;  // AES key encrypted with RSA
+  bytes encryption_iv = 12;      // Initialization vector for AES
+  
+  // Model parameters as serialized arrays (either plain or encrypted)
+  repeated LayerData layers = 8;
+  
+  // Additional metrics
+  map<string, float> metrics = 9;
+}
+
+// Layer data containing shape and flattened array data
+message LayerData {
+  repeated int32 shape = 1;
+  bytes data = 2;      // Either plain data or AES encrypted data
+  string dtype = 3;
+}
+
+// Message for client identity and authentication
+message ClientIdentity {
+  string client_id = 1;
+  string device_id = 2;
+  int32 round_id = 3;
+  int64 timestamp = 4;
+  bytes public_key = 5;     // RSA public key used for key exchange
+  bytes signature = 6;
+}
+
+// Message for initial configuration
+message ConfigMessage {
+  string config_version = 1;
+  int32 round_id = 2;
+  bytes server_public_key = 3;   // Server's RSA public key (K3)
+  bytes encrypted_config = 4;
+  bytes hmac_digest = 5;
+}
+
+// Message for aggregation result
+message AggregationResult {
+  int32 round_id = 1;
+  int32 client_count = 2;
+  int64 timestamp = 3;
+  repeated LayerData global_model = 4;
+  map<string, float> metrics = 5;
+  bytes hmac_digest = 6;
+}
+
+// Client update message for Paillier homomorphic encryption
+message ClientUpdateProto {
+  // Client identification
+  string client_id = 1;
+  int32 round_id = 2;
+  string device_type = 3;
+  
+  // Metadata
+  int64 timestamp = 4;
+  float training_time = 5;
+  int32 training_samples = 6;
+  
+  // Authentication
+  bytes hmac_digest = 7;
+  
+  // Paillier encrypted data (replacing encrypted_payload)
+  repeated string paillier_ciphertexts = 8;
+  
+  // Additional metrics
+  map<string, float> metrics = 9;
+}
+
+// Edge node aggregation message for Paillier homomorphic encryption
+message EdgeAggregateProto {
+  // Edge identification
+  string edge_id = 1;
+  int32 round_id = 2;
+  int32 client_count = 3;
+  
+  // Metadata
+  int64 timestamp = 4;
+  
+  // Paillier homomorphically added ciphertexts (replacing encrypted_aggregate)
+  repeated string aggregated_paillier_ciphertexts = 5;
+  
+  // Authentication
+  bytes hmac_digest = 6;
+  
+  // Additional metrics
+  map<string, float> metrics = 7;
+} 
